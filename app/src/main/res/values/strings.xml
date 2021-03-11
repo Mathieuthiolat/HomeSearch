@@ -1,14 +1,10 @@
 <resources>
     <string name="app_name">HomeSearch</string>
     <string name="title_home">Home</string>
-    <string name="title_logement">Logement</string>
-    <string name="title_profile">Profile</string>
-    <string name="title_activity_profile">Profile</string>
-    <!--
-    This string is used for square devices and overridden by hello_world in
-    values-round/strings.xml for round devices.
-    -->
-    <string name="hello_world">Hello Square World!</string>
-    <string name="title_activity_home">HomeActivity</string>
-    <string name="title_activity_logement">LogementActivity</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="search">Recherche</string>
+    <string name="image_description">Language Description</string>
+    <string name="logement">Logement</string>
+    <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officiis repudiandae, voluptatum. Accusamus eius eos error illo impedit maiores maxime necessitatibus nobis, numquam quidem quisquam recusandae repudiandae soluta sunt voluptatibus. Maxime!</string>
 </resources>
