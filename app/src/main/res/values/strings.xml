@@ -5,6 +5,19 @@
     <string name="title_notifications">Notifications</string>
     <string name="search">Recherche</string>
     <string name="image_description">Language Description</string>
+
     <string name="logement">Logement</string>
     <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officiis repudiandae, voluptatum. Accusamus eius eos error illo impedit maiores maxime necessitatibus nobis, numquam quidem quisquam recusandae repudiandae soluta sunt voluptatibus. Maxime!</string>
+
+    <string name="menu_logements">Mes Logements</string>
+    <string name="menu_explore">Explorer</string>
+    <string name="menu_compte">Mon Compte</string>
+
+    <string name="connexion_OK">Connexion réussie</string>
+    <string name="connexion_Fail">Erreur de connexion</string>
+
+    <string name="Account_connexion_mdp">Mot de passe</string>
+    <string name="Account_connexion_name">Nom d\'utilisateur</string>
+    <string name="Account_connexion_btn">Connexion</string>
+    <string name="Account_userName">Utilisateur</string>
 </resources>

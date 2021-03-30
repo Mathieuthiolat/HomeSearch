@@ -9,6 +9,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="or">#FFD700</color>
 
+    <color name="transparent">#00FFFFFF</color>
+    <color name="warning">#FF0000</color>
+    <color name="succes">#56C819</color>
+
     <color name="primary_color">#0B132B</color>
     <color name="secondary_color">#1C2541</color>
     <color name="tertiary_color">#3a506b</color>
