@@ -49,13 +49,15 @@ public class ProfileActivity extends AppCompatActivity {
 
     private static final String FILENAME = "user_info";
 
-    private Button mButtonSubmitConnexion;
-
-    private ImageButton bouttonDeconnexion;
-    private ImageButton bouttonEdition;
     private ImageButton navExplore;
     private ImageButton navAppart;
     private ImageButton navAccount;
+
+    private Button mButtonSubmitConnexion;
+    private Button mButtonSubmitInscription;
+
+    private ImageButton bouttonDeconnexion;
+    private ImageButton bouttonEdition;
 
     private TextView userName;
 
@@ -65,9 +67,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private EditText mTextInputUserName;
     private EditText mTextInputPassword;
-
-
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,10 +85,19 @@ public class ProfileActivity extends AppCompatActivity {
         mButtonSubmitConnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tryConnexion();
                 closeKeyboard();
+                tryConnexion();
             }
         });
+        mButtonSubmitInscription = findViewById(R.id.btn_inscription);
+        mButtonSubmitInscription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeKeyboard();
+                tryInscription();
+            }
+        });
+
         bouttonDeconnexion = findViewById(R.id.logout_btn);
         bouttonDeconnexion.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +128,61 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));
             }
         });
+    }
+
+    public void tryInscription(){
+        mTextInputUserName = findViewById(R.id.user_name);
+        String sUserName = mTextInputUserName.getText().toString();
+
+        mTextInputPassword = findViewById(R.id.user_passwordConfirm);
+        String passWord = md5(mTextInputPassword.getText().toString());
+
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://fablab.mthiolat.fr/link/try_inscription.php?user_nom="+sUserName+"&user_mdp="+passWord;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println(response);
+                RelativeLayout contextView = findViewById(R.id.main_page_acccount);
+
+                try {
+                    if(response.getBoolean("succes")){
+                        Snackbar.make(contextView, response.getString("error"), Snackbar.LENGTH_SHORT)
+                                .setBackgroundTint(getColor(R.color.warning))
+                                .setAnchorView(formConnexion)
+                                .show();
+                    }else{
+                        Snackbar.make(contextView, R.string.inscription_OK, Snackbar.LENGTH_SHORT)
+                                .setBackgroundTint(getColor(R.color.succes))
+                                .setAnchorView(formConnexion)
+                                .show();
+                        processeResponse(response);
+
+                    }
+                } catch (Exception e) {
+                    e.getStackTrace();
+                    Snackbar.make(contextView, R.string.inscription_Fail, Snackbar.LENGTH_SHORT)
+                            .setBackgroundTint(getColor(R.color.warning))
+                            .setAnchorView(formConnexion)
+                            .show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // TODO: Handle error
+                error.printStackTrace();
+                RelativeLayout contextView = findViewById(R.id.main_page_acccount);
+                Snackbar.make(contextView, R.string.inscription_Fail, Snackbar.LENGTH_SHORT)
+                        .setBackgroundTint(getColor(R.color.warning))
+                        .setAnchorView(formConnexion)
+                        .show();
+            }
+        });
+
+        queue.add(jsonObjectRequest);
     }
 
     public void tryConnexion(){
@@ -185,6 +249,7 @@ public class ProfileActivity extends AppCompatActivity {
                         .setBackgroundTint(getColor(R.color.succes))
                         .setAnchorView(formConnexion)
                         .show();
+
             } catch (Exception e) {
                 e.getStackTrace();
                 notConnectedUiUpdate();

@@ -15,6 +15,8 @@
 
     <string name="connexion_OK">Connexion réussie</string>
     <string name="connexion_Fail">Erreur de connexion</string>
+    <string name="inscription_OK">Inscription réussie</string>
+    <string name="inscription_Fail">Erreur d\'inscription</string>
 
     <string name="Account_connexion_mdp">Mot de passe</string>
     <string name="Account_connexion_name">Nom d\'utilisateur</string>
