@@ -28,7 +28,7 @@ public class GetBluetooth extends AppCompatActivity {
     ImageView mBlueIv;
     Button mOnBtn, mOffBtn, mDiscoverBtn, mPairedBtn;
 
-    BluetoothAdapter mBlueAdapter;
+    private BluetoothAdapter mBlueAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,20 +47,20 @@ public class GetBluetooth extends AppCompatActivity {
         mBlueAdapter = BluetoothAdapter.getDefaultAdapter();
 
         //check if bluetooth is available or not
-        if (mBlueAdapter == null){
-            mStatusBlueTv.setText("Bluetooth is not available");
-        }
-        else {
-            mStatusBlueTv.setText("Bluetooth is available");
-        }
+//        if (mBlueAdapter == null){
+//            mStatusBlueTv.setText("Bluetooth is not available");
+//        }
+//        else {
+//            mStatusBlueTv.setText("Bluetooth is available");
+//        }
 
         //set image according to bluetooth status(on/off)
-        if (mBlueAdapter.isEnabled()){
-            mBlueIv.setImageResource(R.drawable.ic_action_on);
-        }
-        else {
-            mBlueIv.setImageResource(R.drawable.ic_action_off);
-        }
+//        if (mBlueAdapter.isEnabled()){
+//            mBlueIv.setImageResource(R.drawable.ic_action_on);
+//        }
+//        else {
+//            mBlueIv.setImageResource(R.drawable.ic_action_off);
+//        }
 
         //on btn click
         mOnBtn.setOnClickListener(new View.OnClickListener() {
