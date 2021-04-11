@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,6 +23,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -48,6 +51,11 @@ import java.text.DecimalFormat;
 public class ProfileActivity extends AppCompatActivity {
 
     private static final String FILENAME = "user_info";
+    private String user_pass;
+    private String NomAppart;
+    private String ValeurClee;
+    private String NomUser;
+    private String RoleClee;
 
     private ImageButton navExplore;
     private ImageButton navAppart;
@@ -57,13 +65,14 @@ public class ProfileActivity extends AppCompatActivity {
     private Button mButtonSubmitInscription;
 
     private ImageButton bouttonDeconnexion;
-    private ImageButton bouttonEdition;
+    private ImageButton bouttonBluetooth;
 
     private TextView userName;
 
     private LinearLayout accountExtraBtn;
     private LinearLayout profileLayout;
     private LinearLayout formConnexion;
+    private LinearLayout mlistKey ;
 
     private EditText mTextInputUserName;
     private EditText mTextInputPassword;
@@ -78,6 +87,8 @@ public class ProfileActivity extends AppCompatActivity {
         if (oldResponse != null) {
             processeResponse(oldResponse);
         }
+
+        mlistKey = (LinearLayout) findViewById(R.id.appart_key_liste);
 
         System.out.println(readFromCache());
 
@@ -103,6 +114,14 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 deconnexion();
+            }
+        });
+        //Bouton bluetooth
+        bouttonBluetooth = findViewById(R.id.bluetoothActive);
+        bouttonBluetooth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(ProfileActivity.this, GetBluetooth.class));
             }
         });
 
@@ -149,16 +168,17 @@ public class ProfileActivity extends AppCompatActivity {
 
                 try {
                     if(response.getBoolean("succes")){
-                        Snackbar.make(contextView, response.getString("error"), Snackbar.LENGTH_SHORT)
-                                .setBackgroundTint(getColor(R.color.warning))
-                                .setAnchorView(formConnexion)
-                                .show();
-                    }else{
                         Snackbar.make(contextView, R.string.inscription_OK, Snackbar.LENGTH_SHORT)
                                 .setBackgroundTint(getColor(R.color.succes))
                                 .setAnchorView(formConnexion)
                                 .show();
                         processeResponse(response);
+
+                    }else{
+                        Snackbar.make(contextView, response.getString("error"), Snackbar.LENGTH_SHORT)
+                                .setBackgroundTint(getColor(R.color.warning))
+                                .setAnchorView(formConnexion)
+                                .show();
 
                     }
                 } catch (Exception e) {
@@ -192,6 +212,8 @@ public class ProfileActivity extends AppCompatActivity {
         mTextInputPassword = findViewById(R.id.user_passwordConfirm);
         String passWord = md5(mTextInputPassword.getText().toString());
 
+        RelativeLayout contextView = findViewById(R.id.main_page_acccount);
+
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://fablab.mthiolat.fr/link/check_connexion.php?user_nom="+sUserName+"&user_mdp="+passWord;
@@ -200,6 +222,10 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 System.out.println(response);
+                Snackbar.make(contextView, R.string.connexion_OK, Snackbar.LENGTH_SHORT)
+                        .setBackgroundTint(getColor(R.color.succes))
+                        .setAnchorView(formConnexion)
+                        .show();
                 processeResponse(response);
             }
         }, new Response.ErrorListener() {
@@ -213,11 +239,76 @@ public class ProfileActivity extends AppCompatActivity {
 
         queue.add(jsonObjectRequest);
     }
+    public void getKey() {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://fablab.mthiolat.fr/link/get_own_key.php?user_id=1&user_mdp=241c91e6af20e9f11bbcdb5fd317636c";
+
+        JsonArrayRequest JsonArrayRequest = new JsonArrayRequest (Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                System.out.println(response);
+                try {
+                    mlistKey.removeAllViews();
+                    for(int i=0; response.length() > i ;i++) {
+                        JSONObject firstEntry = response.getJSONObject(i);
+                        NomUser = firstEntry.getString("NomUser");
+                        NomAppart = firstEntry.getString("NomAppart");
+                        RoleClee = firstEntry.getString("RoleClee");
+                        ValeurClee = firstEntry.getString("ValeurClee");
+                        createIU();
+                    }
+                } catch (JSONException e) {
+                        e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // TODO: Handle error
+                error.printStackTrace();
+            }
+        });
+
+        queue.add(JsonArrayRequest);
+    }
+
+    public void createIU(){
+        TextView mtextViewTitle = new TextView(new ContextThemeWrapper(ProfileActivity.this, R.style.CustomKeyTextAppartementName));
+        mtextViewTitle.setText(NomAppart);
+
+        com.google.android.material.switchmaterial.SwitchMaterial mkeyValeur = new com.google.android.material.switchmaterial.SwitchMaterial(new ContextThemeWrapper(ProfileActivity.this, R.style.CustomOpenAppartement));
+        mkeyValeur.setText(ValeurClee);
+
+        LinearLayout mtextHorizontal = new LinearLayout(new ContextThemeWrapper(ProfileActivity.this, R.style.CustomLinearLayoutKey));
+        mtextHorizontal.setOrientation(LinearLayout.HORIZONTAL);
+
+        mtextHorizontal.addView(mtextViewTitle);
+        mtextHorizontal.addView(mkeyValeur);
+
+
+//        mtextHorizontal.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view)
+//            {
+//                /*Intent intent = new Intent(ProfileActivity.this, DetailsJob.class);
+//                Bundle y = new Bundle();
+//                y.putString("key", postID);
+//                intent.putExtras(y);
+//                startActivity(intent);
+//                finish();*/
+//            }
+//        });
+        mlistKey.addView(mtextHorizontal);
+    }
+
+
     public void deconnexion() {
         File file = new File(getCacheDir(), FILENAME);
         deleteFile(FILENAME);
         profileLayout = findViewById(R.id.basic_user_info);
         profileLayout.setVisibility(View.INVISIBLE);
+
+        mlistKey.setVisibility(View.INVISIBLE);
 
         mTextInputUserName = findViewById(R.id.user_name);
         mTextInputUserName.setText("");
@@ -239,16 +330,13 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void processeResponse(JSONObject response) {
-        RelativeLayout contextView = findViewById(R.id.main_page_acccount);
         if(response != null){
             try {
                 storeInCache(response);
                 String user_nom = response.getString("user_nom");
+                user_pass = response.getString("user_mdp");
+                getKey();
                 updateUI(user_nom);
-                Snackbar.make(contextView, R.string.connexion_OK, Snackbar.LENGTH_SHORT)
-                        .setBackgroundTint(getColor(R.color.succes))
-                        .setAnchorView(formConnexion)
-                        .show();
 
             } catch (Exception e) {
                 e.getStackTrace();
@@ -272,6 +360,9 @@ public class ProfileActivity extends AppCompatActivity {
         try {
             profileLayout = findViewById(R.id.basic_user_info);
             profileLayout.setVisibility(View.VISIBLE);
+
+            mlistKey = findViewById(R.id.appart_key_liste);
+            mlistKey.setVisibility(View.VISIBLE);
 
             accountExtraBtn = findViewById(R.id.account_extra_btn);
             accountExtraBtn.setVisibility(View.VISIBLE);
