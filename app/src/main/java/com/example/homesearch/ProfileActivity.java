@@ -1,27 +1,19 @@
 package com.example.homesearch;
 
-import android.app.Notification;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -32,10 +24,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputEditText;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,17 +37,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.DecimalFormat;
-import java.util.Set;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private static final String FILENAME = "user_info";
-    private String UserId;
+    public static final String FILENAME = "user_info";
+    private Integer UserId;
     private String UserPass;
     private String NomAppart;
     private String ValeurClee;
@@ -144,13 +130,13 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(new Intent(ProfileActivity.this, MainActivity.class));
             }
         });
-        navAppart = findViewById(R.id.page_appart);
-        navAppart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //startActivity(new Intent(ProfileActivity.this, AppartActivity.class));
-            }
-        });
+//        navAppart = findViewById(R.id.page_appart);
+//        navAppart.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                //startActivity(new Intent(ProfileActivity.this, AppartActivity.class));
+//            }
+//        });
         navAccount = findViewById(R.id.page_account);
         navAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -263,11 +249,12 @@ public class ProfileActivity extends AppCompatActivity {
                     mlistKey.removeAllViews();
                     for(int i=0; response.length() > i ;i++) {
                         JSONObject firstEntry = response.getJSONObject(i);
+                        String IdAppart = firstEntry.getString("IdAppart");
                         NomUser = firstEntry.getString("NomUser");
                         NomAppart = firstEntry.getString("NomAppart");
                         RoleClee = firstEntry.getString("RoleClee");
                         ValeurClee = firstEntry.getString("ValeurClee");
-                        createIU();
+                        createIU(IdAppart);
                     }
                 } catch (JSONException e) {
                         e.printStackTrace();
@@ -283,10 +270,53 @@ public class ProfileActivity extends AppCompatActivity {
 
         queue.add(JsonArrayRequest);
     }
-
-    public void createIU(){
+    public void deleteKey(String IdAppart) {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://fablab.mthiolat.fr/link/delete_reservation.php?user_id="+UserId+"&fiche_appart_id="+IdAppart;
+        JsonObjectRequest JsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        com.google.android.material.textfield.TextInputLayout searcheBar = findViewById(R.id.home_search_bar);
+                        RelativeLayout contextView = findViewById(R.id.main_page_acccount);
+                        try {
+                            if(response.getBoolean("succes")){
+                                Snackbar.make(contextView, R.string.supprClee_OK, Snackbar.LENGTH_SHORT)
+                                        .setBackgroundTint(getColor(R.color.succes))
+                                        .setAnchorView(formConnexion)
+                                        .show();
+                                getKey();
+                            }
+                        } catch (Exception e) {
+                            e.getStackTrace();
+                            Snackbar.make(contextView, R.string.supprClee_Fail, Snackbar.LENGTH_SHORT)
+                                    .setBackgroundTint(getColor(R.color.warning))
+                                    .setAnchorView(formConnexion)
+                                    .show();
+                        }
+                    }
+                }, new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Error.Response", error.toString());
+                    }
+                });
+        queue.add(JsonObjectRequest);
+    }
+    public void createIU(String IdAppart){
         TextView mtextViewTitle = new TextView(ProfileActivity.this, null ,0 , R.style.CustomKeyTextAppartementName);
         mtextViewTitle.setText(NomAppart);
+
+        Button mDeleteButton = new Button(ProfileActivity.this, null ,0 ,R.style.CustomDeleteKey);
+        mDeleteButton.setText("Supprimer");
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                deleteKey(IdAppart);
+            }
+        });
 
         com.google.android.material.switchmaterial.SwitchMaterial mkeyValeur = new com.google.android.material.switchmaterial.SwitchMaterial(new ContextThemeWrapper(ProfileActivity.this, R.style.CustomOpenAppartement));
 
@@ -295,6 +325,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         mtextHorizontal.addView(mtextViewTitle);
         mtextHorizontal.addView(mkeyValeur);
+        mtextHorizontal.addView(mDeleteButton);
 
         mlistKey.addView(mtextHorizontal);
     }
@@ -330,7 +361,7 @@ public class ProfileActivity extends AppCompatActivity {
         if(response != null){
             try {
                 storeInCache(response);
-                UserId = response.getString("user_id");
+                UserId = response.getInt("user_id");
                 NomUser = response.getString("user_nom");
                 UserPass = response.getString("user_mdp");
                 getKey();
@@ -415,6 +446,8 @@ public class ProfileActivity extends AppCompatActivity {
         }
         return response;
     }
+
+
 
     private static final String md5(final String password) {
         try {

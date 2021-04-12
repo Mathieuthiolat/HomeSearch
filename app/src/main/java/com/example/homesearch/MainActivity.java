@@ -1,27 +1,24 @@
 package com.example.homesearch;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Config;
 import android.util.Log;
-import android.view.MenuItem;
+import android.view.ContextThemeWrapper;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.textfield.TextInputEditText;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -35,40 +32,58 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.util.Date;
-
-import com.example.homesearch.R;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String FILENAME = "last-homesearch";
 
-    private TextView mTextViewDescriptionName;
+    private LinearLayout mlistAppart;
+
+    private String DescriptionAppart;
+    private String NomAppart;
+    private String ImageAppart_1;
+    private String DisponibiliteAppart;
+    private String Id_appart;
+    public static String MESSAGE_KEY = "hello";
+
+    private ImageButton navExplore;
+    private ImageButton navAppart;
+    private ImageButton navAccount;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        ActionBar actionBar = getSupportActionBar();
-//        Log.v(Config.LOG_TAG, actionBar != null ? "actionBar not null" : "actionBar null");
-//        if (actionBar != null)
-//        {
-//            actionBar.setHomeButtonEnabled(true);
-//            actionBar.setDisplayHomeAsUpEnabled(true);
-//        }
+        mlistAppart = (LinearLayout) findViewById(R.id.appart_liste);
+
+        getAppart();
 
 
-        mTextViewDescriptionName = findViewById(R.id.texte_logement1);
-
-        JSONObject response = readFromCache();
-        if (response != null) {
-            updateUI(response);
-        }
+        //Les listener pour changer d'activité
+        navExplore = findViewById(R.id.page_explore);
+        navExplore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, MainActivity.class));
+            }
+        });
+//        navAppart = findViewById(R.id.page_appart);
+//        navAppart.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                //startActivity(new Intent(ProfileActivity.this, AppartActivity.class));
+//            }
+//        });
+        navAccount = findViewById(R.id.page_account);
+        navAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+            }
+        });
 
     }
 
@@ -77,44 +92,97 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private void getCurrentWeather(String zipCode) {
-        // Instantiate the RequestQueue.
+    public void getAppart() {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://fablab.mthiolat.fr/link/get_apparts.php";
+        String url = "https://fablab.mthiolat.fr/link/get_apparts.php";
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        storeInCache(response);
-                        updateUI(response);
+        JsonArrayRequest JsonArrayRequest = new JsonArrayRequest (Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                System.out.println(response);
+                try {
+                    mlistAppart.removeAllViews();
+                    for(int i=0; response.length() > i ;i++) {
+                        JSONObject firstEntry = response.getJSONObject(i);
+                        NomAppart = firstEntry.getString("NomAppart");
+                        DescriptionAppart = firstEntry.getString("DescriptionAppart");
+                        ImageAppart_1 = firstEntry.getString("ImageAppart_1");
+                        Id_appart = firstEntry.getString("Id_appart");
+                        //DisponibiliteAppart = firstEntry.getString("DisponibiliteAppart");
+                        createIU(Id_appart);
                     }
-                }, new Response.ErrorListener() {
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // TODO: Handle error
+                error.printStackTrace();
+            }
+        });
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-
-                    }
-                });
-
-        queue.add(jsonObjectRequest);
+        queue.add(JsonArrayRequest);
     }
 
-    private void updateUI(JSONObject response) {
-        try {
-            String name = response.getString("name");
-            String DescriptionAppart = response.getString("DescriptionAppart");
-            JSONArray weather = response.getJSONArray("weather");
-            JSONObject firstWeather = weather.getJSONObject(0);
-            String icon = firstWeather.getString("icon");
-            mTextViewDescriptionName.setText(DescriptionAppart);
-            //Picasso.get().load("https://openweathermap.org/img/wn/" + icon + "@2x.png").into(mImageViewWeatherCondition);
-        } catch (Exception e) {
-            e.getStackTrace();
+    public void createIU(String appartId){
+
+        TextView mtextViewTitle = new TextView(new ContextThemeWrapper(MainActivity.this, R.style.CustomTextAppartementTitle));
+        mtextViewTitle.setText(NomAppart);
+
+        TextView mtextViewDescription = new TextView(new ContextThemeWrapper(MainActivity.this, R.style.CustomTextAppartementDescription));
+        mtextViewDescription.setText(DescriptionAppart);
+
+        //com.google.android.material.switchmaterial.SwitchMaterial mkeyValeur = new com.google.android.material.switchmaterial.SwitchMaterial(new ContextThemeWrapper(HomeActivity.this, R.style.CustomOpenAppartement));
+        //mkeyValeur.setText(ValeurClee);
+
+        LinearLayout mtextHorizontal = new LinearLayout(new ContextThemeWrapper(MainActivity.this, R.style.CustomLinearLayoutHorizontal));
+        mtextHorizontal.setOrientation(LinearLayout.HORIZONTAL);
+
+        LinearLayout mtextVertical = new LinearLayout(new ContextThemeWrapper(MainActivity.this, R.style.CustomLinearLayoutHorizontal));
+        mtextVertical.setOrientation(LinearLayout.VERTICAL);
+
+        //Button midappart = new Button(new ContextThemeWrapper(HomeActivity.this, R.style.CustomTextAppartementDescription));
+        mtextHorizontal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                Intent intent = new Intent(MainActivity.this, DetailAppartActivity.class);
+                Bundle y = new Bundle();
+                y.putString("id_appart", appartId);
+                intent.putExtras(y);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        if(ImageAppart_1 != null && !ImageAppart_1.equals("")){
+            ImageView imageappart = new ImageView(new ContextThemeWrapper(MainActivity.this, R.style.CustomKeyTextAppartementName));
+            Picasso.get().load(ImageAppart_1).into(imageappart);
+            mtextHorizontal.addView(imageappart);
         }
 
+        mtextVertical.addView(mtextViewTitle);
+        mtextVertical.addView(mtextViewDescription);
+        //mtextVertical.addView(midappart);
+        mtextHorizontal.addView(mtextVertical);
+        //mtextHorizontal.addView(mkeyValeur);
+
+
+//        mtextHorizontal.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view)
+//            {
+//                /*Intent intent = new Intent(ProfileActivity.this, DetailsJob.class);
+//                Bundle y = new Bundle();
+//                y.putString("key", postID);
+//                intent.putExtras(y);
+//                startActivity(intent);
+//                finish();*/
+//            }
+//        });
+        mlistAppart.addView(mtextHorizontal);
     }
 
     private void storeInCache(JSONObject response) {

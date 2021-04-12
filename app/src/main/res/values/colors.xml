@@ -11,8 +11,8 @@
     <!-- HomeSearch Colors -->
     <color name="or">#FFD700</color>
     <color name="dark_blue">#222A55</color>
-    <color name="dark_blue_varient">#283993</color>
-    <color name="magnolia">#FFFAFF</color>
+    <color name="dark_blue_varient">#5567C8</color>
+    <color name="lightgray">#E1E1E1</color>
 
     <color name="transparent">#00FFFFFF</color>
     <color name="warning">#FF0000</color>

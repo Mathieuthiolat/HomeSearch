@@ -1,9 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/detail_appart_page"
     tools:context=".DetailAppartActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/home_search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/search"
+        app:endIconDrawable="@drawable/search"
+        android:background="@color/dark_blue"
+        app:endIconMode="custom">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_margin="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="100dp"
+        android:layout_below="@+id/home_search_bar">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/home_search_bar"
+            android:orientation="vertical">
+            <ImageView
+                android:id="@+id/detail_appart_img"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginBottom="10dp"
+                android:contentDescription="@string/image_description"
+                android:scaleType="centerCrop"
+                android:layout_gravity="center"
+                android:backgroundTint="@color/lightgray"
+                android:src="@drawable/empty_img"/>
+            <TextView
+                android:id="@+id/detail_appart_titre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                style="@style/CustomTextAppartementTitle"
+                android:textSize="24sp"
+                android:textColor="@color/dark_blue"
+                android:text="@string/detail_appart_emptyNom"/>
+            <TextView
+                android:id="@+id/detail_appart_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="25dp"
+                android:paddingVertical="10dp"
+                android:text="@string/lorem"/>
+            <TextView
+                android:id="@+id/detail_appart_labelAdress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/detailAppartLabel"
+                android:text="@string/detail_appart_labelAdress"/>
+            <TextView
+                android:id="@+id/detail_appart_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="25dp"
+                android:text="@string/detail_appart_address"/>
+            <TextView
+                android:id="@+id/detail_appart_labelCat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/detailAppartLabel"
+                android:text="Categorie du logement"/>
+            <TextView
+                android:id="@+id/detail_appart_cat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="25dp"
+                android:text="Appartement"/>
+            <TextView
+                android:id="@+id/detail_appart_labelCapa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/detailAppartLabel"
+                android:text="Capacite du logement"/>
+            <TextView
+                android:id="@+id/detail_appart_capa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="25dp"
+                android:text="8"/>
+
+            <Button
+                android:id="@+id/detail_appart_btnReserver"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="20dp"
+                android:text="Réserver"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+    <LinearLayout
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        app:itemIconTint="@color/primary_color"
+        app:itemTextColor="@color/secondary_color"
+        app:itemRippleColor="@color/secondary_color"
+        app:labelVisibilityMode="selected"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/page_explore"
+            android:src="@drawable/loupe"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:scaleType="fitCenter"
+            android:layout_weight="1" />
+        <ImageButton
+            android:id="@+id/page_account"
+            android:src="@drawable/avatar_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:scaleType="fitCenter"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,7 +1,5 @@
-package com.example.weather;
-
-import android.util.Log;
+package com.example.homesearch;
 
 public class Config {
-    public static String LOG_TAG = "weather-log";
+    public static String LOG_TAG = "HomeSearch-log";
 }

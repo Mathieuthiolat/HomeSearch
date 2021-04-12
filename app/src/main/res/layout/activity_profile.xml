@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:gravity="center"
-        android:visibility="invisible"
         android:orientation="vertical">
         <EditText
             android:id="@+id/user_name"
@@ -146,6 +145,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
+        android:visibility="invisible"
         android:layout_margin="15dp"
         android:orientation="vertical">
         <LinearLayout
@@ -188,13 +188,6 @@
         <ImageButton
             android:id="@+id/page_explore"
             android:src="@drawable/loupe"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:scaleType="fitCenter"
-            android:layout_weight="1" />
-        <ImageButton
-            android:id="@+id/page_appart"
-            android:src="@drawable/home"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:scaleType="fitCenter"
