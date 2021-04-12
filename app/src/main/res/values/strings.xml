@@ -22,4 +22,8 @@
     <string name="Account_connexion_name">Nom d\'utilisateur</string>
     <string name="Account_connexion_btn">Connexion</string>
     <string name="Account_userName">Utilisateur</string>
+    <string name="listClee_default_appartName">Nom de l\'appartement</string>
+    <string name="listClee_default_etatPorte">Fermé</string>
+    <string name="Account_inscription_btn">Inscription</string>
+    <string name="listClee_default_Titre">Liste des clées</string>
 </resources>

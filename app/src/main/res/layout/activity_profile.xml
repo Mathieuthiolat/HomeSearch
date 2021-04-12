@@ -9,83 +9,12 @@
     android:gravity="center_horizontal"
     android:orientation="vertical">
     <LinearLayout
-        android:id="@+id/account_extra_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_margin="15dp"
-        android:orientation="horizontal">
-        <ImageButton
-            android:id="@+id/logout_btn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:layout_marginEnd="20dp"
-            android:background="@color/transparent"
-            android:src="@drawable/logout"/>
-        <ImageButton
-        android:id="@+id/bluetoothActive"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:layout_marginEnd="20dp"
-        android:background="@color/transparent"
-        android:src="@drawable/ic_action_off"/>
-        <ImageButton
-            android:id="@+id/edit_btn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:background="@color/transparent"
-            android:src="@drawable/edit"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/basic_user_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:gravity="center"
-        android:visibility="invisible"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/profil_userImg"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="#C8C8C8"
-            android:padding="10dp"
-            android:src="@drawable/avatar"
-            android:contentDescription="TODO" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/profil_userName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="15dp"
-                android:text="@string/Account_userName"
-                android:textSize="24sp"
-                tools:ignore="RtlSymmetry" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/account_form_connexion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:gravity="center"
+        android:visibility="invisible"
         android:orientation="vertical">
         <EditText
             android:id="@+id/user_name"
@@ -114,27 +43,133 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="Inscription" />
+                android:text="@string/Account_inscription_btn" />
+
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/connected_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/basic_user_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:gravity="center"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/profil_userImg"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:padding="10dp"
+                android:src="@drawable/avatar_v2"
+                android:contentDescription="TODO" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="15dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/profil_userName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="15dp"
+                    android:text="@string/Account_userName"
+                    android:textAllCaps="true"
+                    android:textSize="24sp"
+                    tools:ignore="RtlSymmetry" />
+                <!--Show paired devices here-->
+                <TextView
+                    android:id="@+id/pairedTv"
+                    android:minWidth="200dp"
+                    android:text=""
+                    android:textColor="#000"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:id="@+id/spacer"
+            android:layout_below="@+id/basic_user_info"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:background="@color/or"/>
+        <LinearLayout
+            android:id="@+id/listClee_default_Titre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/spacer"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="15dp"
+                android:textColor="@color/dark_blue"
+                android:text="@string/listClee_default_Titre"
+                android:textSize="24sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/appart_key_liste"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/listClee_default_Titre"
+            android:orientation="vertical">
+            <LinearLayout
+                style="@style/CustomLinearLayoutKey">
+                <TextView
+                    style="@style/CustomKeyTextAppartementName"
+                    android:text="@string/listClee_default_appartName" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    style="@style/CustomOpenAppartement"
+                    android:checked="true"
+                    android:text="@string/listClee_default_etatPorte"/>
+            </LinearLayout>
 
         </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/appart_key_liste"
-        android:layout_width="match_parent"
+        android:id="@+id/account_extra_btn"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/basic_user_info"
-        android:visibility="invisible"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="15dp"
         android:orientation="vertical">
         <LinearLayout
-            style="@style/CustomLinearLayoutKey">
-            <TextView
-               style="@style/CustomKeyTextAppartementName"
-                android:text="Nom de l'appartement" />
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                style="@style/CustomOpenAppartement"
-                android:checked="true"
-                android:text="Etat"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/logout_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="20dp"
+                android:background="@color/transparent"
+                android:src="@drawable/logout"/>
+            <ImageButton
+                android:id="@+id/bluetoothActive"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="20dp"
+                android:background="@color/transparent"
+                android:src="@drawable/ic_action_off"/>
         </LinearLayout>
 
     </LinearLayout>

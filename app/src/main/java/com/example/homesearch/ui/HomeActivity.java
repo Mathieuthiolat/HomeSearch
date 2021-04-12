@@ -108,7 +108,7 @@ public class HomeActivity extends AppCompatActivity {
             JSONArray weather = response.getJSONArray("weather");
             JSONObject firstWeather = weather.getJSONObject(0);
             String icon = firstWeather.getString("icon");
-            mTextViewDescriptionName.setText(DescriptionAppart);
+            //mTextViewDescriptionName.setText(DescriptionAppart);
             //Picasso.get().load("https://openweathermap.org/img/wn/" + icon + "@2x.png").into(mImageViewWeatherCondition);
         } catch (Exception e) {
             e.getStackTrace();

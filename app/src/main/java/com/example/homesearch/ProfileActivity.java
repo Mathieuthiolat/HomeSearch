@@ -1,8 +1,12 @@
 package com.example.homesearch;
 
 import android.app.Notification;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
@@ -10,12 +14,14 @@ import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -47,11 +53,13 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
+import java.util.Set;
 
 public class ProfileActivity extends AppCompatActivity {
 
     private static final String FILENAME = "user_info";
-    private String user_pass;
+    private String UserId;
+    private String UserPass;
     private String NomAppart;
     private String ValeurClee;
     private String NomUser;
@@ -69,6 +77,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private TextView userName;
 
+    private LinearLayout layoutConnected;
     private LinearLayout accountExtraBtn;
     private LinearLayout profileLayout;
     private LinearLayout formConnexion;
@@ -76,7 +85,10 @@ public class ProfileActivity extends AppCompatActivity {
 
     private EditText mTextInputUserName;
     private EditText mTextInputPassword;
-    
+
+    private BluetoothAdapter mBlueAdapter;
+    TextView mPairedTv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,10 +99,7 @@ public class ProfileActivity extends AppCompatActivity {
         if (oldResponse != null) {
             processeResponse(oldResponse);
         }
-
         mlistKey = (LinearLayout) findViewById(R.id.appart_key_liste);
-
-        System.out.println(readFromCache());
 
         mButtonSubmitConnexion = findViewById(R.id.btn_connexion);
         mButtonSubmitConnexion.setOnClickListener(new View.OnClickListener() {
@@ -116,12 +125,14 @@ public class ProfileActivity extends AppCompatActivity {
                 deconnexion();
             }
         });
+
         //Bouton bluetooth
         bouttonBluetooth = findViewById(R.id.bluetoothActive);
         bouttonBluetooth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(ProfileActivity.this, GetBluetooth.class));
+                startActivity(new Intent(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS));
+                //startActivity(new Intent(ProfileActivity.this, GetBluetooth.class));
             }
         });
 
@@ -147,8 +158,9 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));
             }
         });
-    }
 
+
+    }
     public void tryInscription(){
         mTextInputUserName = findViewById(R.id.user_name);
         String sUserName = mTextInputUserName.getText().toString();
@@ -241,7 +253,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
     public void getKey() {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://fablab.mthiolat.fr/link/get_own_key.php?user_id=1&user_mdp=241c91e6af20e9f11bbcdb5fd317636c";
+        String url = "https://fablab.mthiolat.fr/link/get_own_key.php?user_id="+UserId+"&user_mdp="+UserPass;
 
         JsonArrayRequest JsonArrayRequest = new JsonArrayRequest (Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
             @Override
@@ -273,31 +285,17 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void createIU(){
-        TextView mtextViewTitle = new TextView(new ContextThemeWrapper(ProfileActivity.this, R.style.CustomKeyTextAppartementName));
+        TextView mtextViewTitle = new TextView(ProfileActivity.this, null ,0 , R.style.CustomKeyTextAppartementName);
         mtextViewTitle.setText(NomAppart);
 
         com.google.android.material.switchmaterial.SwitchMaterial mkeyValeur = new com.google.android.material.switchmaterial.SwitchMaterial(new ContextThemeWrapper(ProfileActivity.this, R.style.CustomOpenAppartement));
-        mkeyValeur.setText(ValeurClee);
 
-        LinearLayout mtextHorizontal = new LinearLayout(new ContextThemeWrapper(ProfileActivity.this, R.style.CustomLinearLayoutKey));
+        LinearLayout mtextHorizontal = new LinearLayout(ProfileActivity.this, null, 0, R.style.CustomLinearLayoutKey);
         mtextHorizontal.setOrientation(LinearLayout.HORIZONTAL);
 
         mtextHorizontal.addView(mtextViewTitle);
         mtextHorizontal.addView(mkeyValeur);
 
-
-//        mtextHorizontal.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view)
-//            {
-//                /*Intent intent = new Intent(ProfileActivity.this, DetailsJob.class);
-//                Bundle y = new Bundle();
-//                y.putString("key", postID);
-//                intent.putExtras(y);
-//                startActivity(intent);
-//                finish();*/
-//            }
-//        });
         mlistKey.addView(mtextHorizontal);
     }
 
@@ -305,10 +303,6 @@ public class ProfileActivity extends AppCompatActivity {
     public void deconnexion() {
         File file = new File(getCacheDir(), FILENAME);
         deleteFile(FILENAME);
-        profileLayout = findViewById(R.id.basic_user_info);
-        profileLayout.setVisibility(View.INVISIBLE);
-
-        mlistKey.setVisibility(View.INVISIBLE);
 
         mTextInputUserName = findViewById(R.id.user_name);
         mTextInputUserName.setText("");
@@ -318,6 +312,9 @@ public class ProfileActivity extends AppCompatActivity {
 
         accountExtraBtn = findViewById(R.id.account_extra_btn);
         accountExtraBtn.setVisibility(View.INVISIBLE);
+
+        layoutConnected = findViewById(R.id.connected_layout);
+        layoutConnected.setVisibility(View.INVISIBLE);
 
         formConnexion.setVisibility(View.VISIBLE);
     }
@@ -333,10 +330,11 @@ public class ProfileActivity extends AppCompatActivity {
         if(response != null){
             try {
                 storeInCache(response);
-                String user_nom = response.getString("user_nom");
-                user_pass = response.getString("user_mdp");
+                UserId = response.getString("user_id");
+                NomUser = response.getString("user_nom");
+                UserPass = response.getString("user_mdp");
                 getKey();
-                updateUI(user_nom);
+                updateUI(NomUser);
 
             } catch (Exception e) {
                 e.getStackTrace();
@@ -358,17 +356,15 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void updateUI(String nom_user) {
         try {
-            profileLayout = findViewById(R.id.basic_user_info);
-            profileLayout.setVisibility(View.VISIBLE);
-
-            mlistKey = findViewById(R.id.appart_key_liste);
-            mlistKey.setVisibility(View.VISIBLE);
+            layoutConnected = findViewById(R.id.connected_layout);
+            layoutConnected.setVisibility(View.VISIBLE);
 
             accountExtraBtn = findViewById(R.id.account_extra_btn);
             accountExtraBtn.setVisibility(View.VISIBLE);
 
             formConnexion = findViewById(R.id.account_form_connexion);
             formConnexion.setVisibility(View.INVISIBLE);
+
             userName = findViewById(R.id.profil_userName);
             userName.setText(nom_user);
         } catch (Exception e) {
